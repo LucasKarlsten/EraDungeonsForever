@@ -12,8 +12,11 @@ func TestRoutes(t *testing.T) {
 		status                  int
 	}{
 		{"/", "Lead with confidence.", "text/html", 200},
-		{"/app.js", "const stops=", "javascript", 200},
+		{"/app.js", "function loadMap", "javascript", 200},
+		{"/maps.js", "stratholme-main-gate", "javascript", 200},
+		{"/stratholme-main-gate.png", "\x89PNG\r\n\x1a\n", "image/png", 200},
 		{"/style.css", "color-scheme:dark", "text/css", 200},
+		{"/stratholme-service-entrance.png", "\x89PNG\r\n\x1a\n", "image/png", 200},
 		{"/healthz", "ok\n", "text/plain", 200},
 		{"/missing", "404 page not found", "text/plain", 404},
 	} {

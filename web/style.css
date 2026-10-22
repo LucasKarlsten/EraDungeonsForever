@@ -1,2 +1,53 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
 :root{color-scheme:dark;--bg:#101413;--panel:#181e1b;--line:#2b342e;--text:#edf0e8;--muted:#98a39a;--mint:#86e7c2;--gold:#c2ad75}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px 'DM Sans',system-ui,sans-serif}header{height:82px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 5%;gap:28px}.brand{color:var(--gold);text-decoration:none;font-size:30px;display:flex;align-items:center;gap:12px}.brand span{font:800 18px Manrope,system-ui;letter-spacing:4px;color:var(--text)}.tagline{color:var(--muted);font-size:12px}.edition{margin-left:auto;font-size:10px;letter-spacing:2px;border:1px solid var(--line);padding:8px 12px;border-radius:4px}main{max-width:1600px;margin:auto;padding:28px 5%}nav{font-size:10px;letter-spacing:1.8px;color:var(--muted)}nav span{margin:0 13px;color:#4a574d}.heading{display:flex;justify-content:space-between;align-items:center;padding:38px 0 32px}.eyebrow{font-size:10px;letter-spacing:1.8px;color:var(--gold);font-weight:700}h1{font:600 clamp(30px,3.2vw,48px) Manrope,system-ui;margin:12px 0;letter-spacing:-1.7px}.subtitle{color:var(--muted);margin:0;font-size:15px}.version{font-size:12px}.version i,.map-footer i{display:inline-block;width:7px;height:7px;background:var(--mint);border-radius:50%;margin-right:8px}.version span{display:block;color:#748177;font-size:11px;margin-top:10px;padding-left:15px}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}.map-column{min-width:0}.map-heading{padding:23px 25px;display:flex;justify-content:space-between;align-items:center}h2{font:600 22px Manrope,system-ui;margin:8px 0 0;letter-spacing:-.6px}h2 small{display:block;font:12px 'DM Sans',system-ui;color:var(--muted);letter-spacing:0;margin-top:6px}.badge{font-size:8px;letter-spacing:1.3px;color:var(--gold);padding:7px 9px;border:1px solid #514835;border-radius:4px;white-space:nowrap}.map-tools{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;align-items:center;gap:22px;font-size:11px;color:var(--muted)}.map-tools>span{color:var(--mint)}.map-tools>div{margin-left:auto;display:flex;gap:5px}button{cursor:pointer;font:inherit;color:var(--text);background:#202923;border:1px solid #39433b;border-radius:5px;padding:7px 10px}button:hover{background:#344138}button:focus-visible,a:focus-visible,input:focus-visible,[role=button]:focus-visible{outline:2px solid var(--mint);outline-offset:3px}button:disabled{opacity:.35;cursor:default}input{accent-color:var(--mint);vertical-align:middle}.map-viewport{position:relative;background:radial-gradient(ellipse at center,#26312b,#141b17);overflow:hidden}#map{display:block;width:100%;height:550px;touch-action:none;cursor:grab}#map:active{cursor:grabbing}.walls>path{fill:none;stroke:#3e473c;stroke-width:93;stroke-linejoin:round;stroke-linecap:square}.walls>.floor{stroke:#555a47;stroke-width:66}.building{fill:#232b24;stroke:#66705a;stroke-width:2}.route-shadow{fill:none;stroke:#101b17;stroke-width:12;stroke-linejoin:round}.route{fill:none;stroke:var(--mint);stroke-width:3;stroke-linejoin:round}.map-labels text{text-anchor:middle;fill:#adb08b;font:10px Georgia,serif;letter-spacing:2px}.map-labels .map-title{font-size:22px;letter-spacing:7px;fill:#d1c291}.marker{cursor:pointer}.marker circle{fill:#172c24;stroke:var(--mint);stroke-width:2}.marker text{fill:#c1f6df;font:bold 14px system-ui;text-anchor:middle;dominant-baseline:central;pointer-events:none}.marker.active circle{fill:var(--mint);stroke:#d8ffeb;stroke-width:3}.marker.active text{fill:#12291e}.compass{position:absolute;right:22px;top:22px;text-align:center;color:var(--gold);font:12px Georgia;line-height:24px;pointer-events:none}.map-credit{position:absolute;bottom:16px;left:20px;color:#a3ae9f;font-size:8px;letter-spacing:1.2px;pointer-events:none}.map-footer{display:flex;justify-content:space-between;padding:15px 20px;font-size:10px;color:var(--muted);gap:10px}aside{border-left:1px solid var(--line);background:#1b211d}.aside-heading{padding:22px}.aside-heading h2{font-size:21px}.aside-heading>p:last-child{color:var(--muted);font-size:12px;line-height:1.7;margin-bottom:0}.route-meta{display:flex;justify-content:space-between;padding:12px 22px;border-block:1px solid var(--line);color:var(--muted);font-size:10px}ol{list-style:none;margin:0;padding:9px 10px}li button{width:100%;text-align:left;border:1px solid transparent;background:transparent;padding:11px;display:flex;gap:12px;align-items:flex-start}li button.active{background:#27382e;border-color:#476551}li .number{width:25px;height:25px;flex-shrink:0;display:grid;place-items:center;border:1px solid #526253;border-radius:50%;font-size:11px;color:var(--muted)}li .active .number{background:var(--mint);border-color:var(--mint);color:#10291c}li strong{display:block;font-size:12px;font-weight:500;padding-top:4px}li small{display:none;line-height:1.65;color:#b4c4b7;font-size:11px;margin-top:7px}li .active small{display:block}.step-navigation{display:flex;justify-content:space-between;align-items:center;padding:10px 20px 20px;font-size:10px;color:var(--muted)}.notice{display:flex;align-items:center;gap:18px;padding:22px 0;border-bottom:1px solid var(--line)}.notice>span:first-child{color:var(--gold);font-size:26px}.notice strong{font-size:12px;font-weight:500}.notice p{font-size:11px;color:var(--muted);line-height:1.7;margin:6px 0 0}.notice>.badge{margin-left:auto}.page-footer{display:flex;justify-content:space-between;gap:20px;font-size:9px;color:#88958a;padding:24px 0}.page-footer span span{margin:0 10px;color:var(--gold)}@media(min-width:1450px){#map{height:620px}}@media(max-width:1000px){.workspace{grid-template-columns:minmax(0,1fr) 285px}.map-footer span:last-child{display:none}.map-tools{gap:8px;padding-inline:12px}.badge{font-size:7px}.map-heading{padding:20px 15px}}@media(max-width:760px){header{height:65px}.tagline{display:none}main{padding:23px 4%}.heading{padding:26px 0}.heading .eyebrow{font-size:8px}.version{display:none}.workspace{grid-template-columns:1fr}aside{border-left:0;border-top:1px solid var(--line)}#map{height:440px}.notice>.badge{display:none}.page-footer{flex-direction:column;gap:10px}nav{font-size:8px;letter-spacing:1px}nav span{margin:0 6px}}
+
+/* Keep the original parchment artwork and the interactive overlay in one SVG. */
+.map-viewport{background:#191b15}
+#map{height:auto;aspect-ratio:1000 / 660}
+.route-shadow{stroke:#fff2cd;stroke-width:5;stroke-linecap:round;opacity:.85}
+.route{stroke:#8b2525;stroke-width:2.2;stroke-linecap:round}
+.marker circle{fill:#fff8e5;stroke:#8b2525;stroke-width:1.5}
+.marker text{fill:#8b2525;font-size:12px}
+.marker.active circle{fill:var(--mint);stroke:#173c2c;stroke-width:2}
+.marker.active text{fill:#173c2c}
+.marker:hover circle{stroke:#173c2c;stroke-width:3}
+.compass{color:#fff0c4;text-shadow:0 1px 3px #24180b}
+.map-credit{bottom:8px;left:10px;padding:4px 6px;background:#21180dcc;color:#eedcb0;border-radius:3px;font-size:7px}
+.page-footer a{color:var(--gold)}
+@media(max-width:760px){#map{height:440px;aspect-ratio:auto}.map-credit{font-size:6px}}
+.map-tools>span{color:#e3af9b}.map-footer i{background:#c66e59}
+.atlas-picker{display:flex;align-items:center;gap:18px;padding:16px 20px;margin-bottom:18px;border:1px solid var(--line);border-radius:9px;background:var(--panel)}
+.atlas-picker label{color:var(--gold);font-size:10px;font-weight:700;letter-spacing:1.5px}
+.atlas-picker select{min-width:280px;max-width:100%;padding:11px 36px 11px 12px;border:1px solid #475347;border-radius:5px;background:#202923;color:var(--text);font:inherit;cursor:pointer}
+.atlas-picker select:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+.atlas-picker>span{margin-left:auto;color:var(--muted);font-size:11px}
+nav b{font-weight:400}
+@media(max-width:760px){.atlas-picker{align-items:stretch;flex-direction:column;gap:10px;padding:16px}.atlas-picker select{min-width:0;width:100%}.atlas-picker>span{display:none}}
+/* Boss encounters use a separate layer from the numbered walkthrough. */
+.boss-marker{cursor:pointer;outline:none}
+.boss-hit-area{fill:transparent;stroke:none}
+.boss-gem{fill:#102a2b;stroke:#86e7d5;stroke-width:2;filter:drop-shadow(0 1px 2px #07191be6)}
+.boss-skull{fill:#e8fff9;stroke:none;pointer-events:none}
+.boss-eye{fill:#102a2b;pointer-events:none}
+.boss-marker:hover .boss-gem,.boss-marker:focus-visible .boss-gem,.boss-marker[aria-expanded=true] .boss-gem{fill:#245653;stroke:#effffb;stroke-width:2.5}
+.boss-card{position:fixed;z-index:20;width:300px;max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);overflow:auto;padding:20px;background:#19221e;border:1px solid #75613d;border-radius:10px;box-shadow:0 14px 50px #0009;color:var(--text)}
+.boss-card[hidden]{display:none}
+.boss-card .eyebrow{margin:0 28px 8px 0;font-size:9px}
+.boss-card h3{font:600 19px Manrope,system-ui;line-height:1.3;margin:0 22px 15px 0}
+.boss-close{position:absolute;right:9px;top:9px;width:32px;height:32px;padding:0;font-size:23px;background:transparent;border-color:transparent;color:var(--muted)}
+.boss-mindset{padding:12px;border-left:2px solid var(--mint);background:#24382d;border-radius:0 5px 5px 0}
+.boss-mindset span{font-size:9px;letter-spacing:1.5px;color:var(--mint);font-weight:700}
+.boss-mindset p{font-size:13px;line-height:1.55;margin:6px 0 0}
+.boss-card h4{font-size:10px;letter-spacing:1.2px;text-transform:uppercase;color:var(--gold);margin:17px 0 8px}
+.boss-card ul{padding-left:18px;margin:0 0 16px;color:#c6cfc7;font-size:12px;line-height:1.8}
+.boss-card li::marker{color:var(--gold)}
+.boss-card a{color:var(--gold);font-size:10px;text-underline-offset:3px}
+.boss-hint{font-size:9px;color:var(--muted);margin:12px 0 0}
+@media(max-width:1000px){.map-tools{flex-wrap:wrap}.map-tools label{white-space:nowrap}}
+
+/* Main encounters carry the Lantern frame behind their skull marker. */
+.boss-lantern{pointer-events:none}
+.boss-lantern path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.boss-lantern .boss-lantern-shadow{fill:#102a2b;stroke:#102a2b;stroke-width:4}
+.boss-lantern-frame{stroke:#86e7d5;stroke-width:1.8}
+.boss-marker:hover .boss-lantern-frame,.boss-marker:focus-visible .boss-lantern-frame,.boss-marker[aria-expanded=true] .boss-lantern-frame{stroke:#effffb}
