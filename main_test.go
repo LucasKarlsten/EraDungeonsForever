@@ -29,3 +29,22 @@ func TestRoutes(t *testing.T) {
 		})
 	}
 }
+
+func TestExpandedMapArtwork(t *testing.T) {
+	for _, name := range []string{
+		"blackrock-depths-1.jpg", "blackrock-depths-2.jpg",
+		"blackrock-spire-1.jpg", "blackrock-spire-2.jpg", "blackrock-spire-3.jpg", "blackrock-spire-4.jpg",
+		"blackrock-spire-5.jpg", "blackrock-spire-6.jpg", "blackrock-spire-7.jpg",
+		"scholomance-1.jpg", "scholomance-2.jpg", "scholomance-3.jpg", "scholomance-4.jpg",
+		"dire-maul-east-upper.jpg", "dire-maul-east-lower.jpg", "dire-maul-north.jpg",
+		"dire-maul-west-gardens.jpg", "dire-maul-west-balcony.jpg", "dire-maul-west-prison.jpg",
+	} {
+		t.Run(name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			handler().ServeHTTP(w, httptest.NewRequest("GET", "/"+name, nil))
+			if w.Code != 200 || !strings.HasPrefix(w.Header().Get("Content-Type"), "image/") || w.Body.Len() < 1000 {
+				t.Fatalf("map artwork unavailable: status=%d type=%s bytes=%d", w.Code, w.Header().Get("Content-Type"), w.Body.Len())
+			}
+		})
+	}
+}
