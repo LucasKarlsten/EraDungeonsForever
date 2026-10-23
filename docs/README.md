@@ -1,3 +1,7 @@
+<img width="2172" height="724" alt="image" src="https://github.com/user-attachments/assets/3a4be19e-d169-4b16-a63b-a46e02e76a98" />
+
+
+
 # Lantern
 
 Dark-mode WoW Classic dungeon route viewer prototype. Go serves embedded static assets with no third-party Go dependencies.
