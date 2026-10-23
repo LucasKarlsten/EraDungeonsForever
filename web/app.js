@@ -1,10 +1,11 @@
 const selectors = new Map();
+const dungeons = window.LANTERN_DUNGEONS || [];
 const svgNS='http://www.w3.org/2000/svg';
 function node(tag,attrs,parent){const n=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);parent.append(n);return n;}
 const markers=document.querySelector('#markers'),steps=document.querySelector('#steps');
 const map=document.querySelector('#map'),floorPicker=document.querySelector('#floor-select');
 let selected=0,stops=[],activeMap,activeFloor,box=[0,0,1000,660],drag=null;
-let routeDesign=false,drawingStroke=null;
+let routeDesign=false,drawingStroke=null,movingMarker=null;
 const routeEdits=new Map(),routeUndo=new Map();
 function floors(){return activeMap.floors || [{id:'main',name:activeMap.wing,image:activeMap.image,route:activeMap.route}]}
 function stopFloor(stop){return stop[4] || floors()[0].id}
@@ -12,15 +13,17 @@ function routeKey(){return `${activeMap.id}::${activeFloor.id}`}
 function currentStrokes(){return routeEdits.get(routeKey())}
 function displayedRoute(){const strokes=currentStrokes();return strokes===undefined?activeFloor.route:strokes.map(points=>points.length?`M${points.map(p=>`${formatCoord(p[0])} ${formatCoord(p[1])}`).join(' L')}`:'').filter(Boolean).join(' ')}
 function formatCoord(value){return String(Math.round(value*10)/10)}
-function updateRouteDisplay(){
+function routeFor(floor){const edits=routeEdits.get(`${activeMap.id}::${floor.id}`);return edits===undefined?floor.route:edits.map(points=>points.length?`M${points.map(p=>`${formatCoord(p[0])} ${formatCoord(p[1])}`).join(' L')}`:'').filter(Boolean).join(' ')}
+function exportMapEntry(){const entry=JSON.parse(JSON.stringify(activeMap));if(entry.floors)entry.floors=entry.floors.map(floor=>({...floor,route:routeFor(floor)}));else entry.route=routeFor(floors()[0]);return `window.LANTERN_DUNGEONS = window.LANTERN_DUNGEONS || [];\nwindow.LANTERN_DUNGEONS.push(${JSON.stringify(entry,null,2)});\n`}
+function updateRouteDisplay(refreshCode=true){
   const route=displayedRoute();document.querySelectorAll('.route,.route-shadow').forEach(path=>path.setAttribute('d',route));
   const code=document.querySelector('#route-code');
-  if(code)code.textContent=`route: "${route}"`;
+  if(code&&refreshCode&&!drawingStroke&&!movingMarker)code.textContent=exportMapEntry();document.querySelector('#route-export-file').textContent=`web/maps/${activeMap.id}.js`;
   const undo=routeUndo.get(routeKey())||[];
   document.querySelector('#route-undo').disabled=!undo.length;
   document.querySelector('#route-clear').disabled=currentStrokes()===undefined||currentStrokes().length===0;
   const count=currentStrokes()?.length||0;
-  document.querySelector('#route-editor-status').textContent=drawingStroke?'Drawing… release to finish this stroke.':count?`${count} stroke${count===1?'':'s'} on ${activeFloor.name}. Undo, clear, or copy the code to save it in web/maps.js.`:`Drag across the map to sketch ${activeFloor.name}. The existing route is replaced when you draw.`;
+  document.querySelector('#route-editor-status').textContent=drawingStroke?'Drawing… release to finish this stroke.':count?`${count} stroke${count===1?'':'s'} on ${activeFloor.name}. Drag a numbered stop, boss, or stair marker to move it; undo, clear, or copy the map entry to save.`:`Drag the map to sketch; drag a stop, boss, or stair marker to move it. Copy the map entry to save your edits.`;
 }
 function setRouteDesign(enabled){
   routeDesign=enabled;drawingStroke=null;map.classList.toggle('route-sketching',enabled);document.body.classList.toggle('route-design-active',enabled);
@@ -39,9 +42,9 @@ function simplifyStroke(points,tolerance=2.6){
   }
   return points.filter((_,i)=>keep[i]);
 }
-function undoRoute(){const history=routeUndo.get(routeKey())||[];if(!history.length)return;const prior=history.pop();routeUndo.set(routeKey(),history);routeEdits.set(routeKey(),prior);updateRouteDisplay()}
-function clearRoute(){if(currentStrokes()===undefined)return;const history=routeUndo.get(routeKey())||[];history.push(currentStrokes().map(stroke=>stroke.map(point=>[...point])));routeUndo.set(routeKey(),history);routeEdits.set(routeKey(),[]);updateRouteDisplay()}
-async function copyRouteCode(){const code=document.querySelector('#route-code').textContent,button=document.querySelector('#route-copy');try{await navigator.clipboard.writeText(code);button.textContent='COPIED';}catch{const field=document.createElement('textarea');field.value=code;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();const copied=document.execCommand('copy');field.remove();button.textContent=copied?'COPIED — PASTE INTO maps.js':'SELECT THE CODE ABOVE';}setTimeout(()=>button.textContent='COPY CODE',1800)}
+function undoRoute(){const history=routeUndo.get(routeKey())||[];if(!history.length)return;const action=history.pop();routeUndo.set(routeKey(),history);if(action.type==='position')setMarkerPosition(action.record,[action.x,action.y]);else if(action.hadEdits)routeEdits.set(routeKey(),action.prior);else routeEdits.delete(routeKey());updateRouteDisplay()}
+function clearRoute(){if(currentStrokes()===undefined)return;const history=routeUndo.get(routeKey())||[];history.push({type:'route',hadEdits:true,prior:currentStrokes().map(stroke=>stroke.map(point=>[...point]))});routeUndo.set(routeKey(),history);routeEdits.set(routeKey(),[]);updateRouteDisplay()}
+async function copyRouteCode(){updateRouteDisplay();const code=document.querySelector('#route-code').textContent,button=document.querySelector('#route-copy');try{await navigator.clipboard.writeText(code);button.textContent='COPIED';}catch{const field=document.createElement('textarea');field.value=code;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.append(field);field.select();const copied=document.execCommand('copy');field.remove();button.textContent=copied?'COPIED — PASTE INTO MAP FILE':'SELECT THE CODE ABOVE';}setTimeout(()=>button.textContent='COPY MAP FILE',1800)}
 function select(i){
   if(i<0||i>=stops.length)return;
   selected=i;
@@ -60,7 +63,7 @@ function renderMarkers(){
     if(stopFloor(stops[i])!==activeFloor.id)return;
     const g=node('g',{class:'marker',role:'button',tabindex:0,'data-index':i,'aria-label':`Stop ${i+1}: ${title}`,transform:`translate(${x} ${y})`},markers);
     node('circle',{r:12},g);node('text',{},g).textContent=i+1;
-    g.addEventListener('click',()=>select(i));g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(i)}});
+    g.addEventListener('click',event=>{if(routeDesign){event.preventDefault();return}select(i)});g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(i)}});
   });
 }
 
@@ -85,7 +88,7 @@ function renderTransitions(){
       const target=counterpart?document.querySelector(`[data-transition="${counterpart.id}"]`):document.querySelectorAll('#steps button')[transition.toStep];
       target?.focus({preventScroll:true});
     };
-    marker.addEventListener('click',travel);
+    marker.addEventListener('click',event=>{if(routeDesign){event.preventDefault();return}travel()});
     marker.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();travel()}});
   }
 }
@@ -137,23 +140,32 @@ floorPicker.addEventListener('change',()=>{
   const url=new URL(location.href);url.searchParams.set('map',activeMap.id);url.searchParams.set('floor',activeFloor.id);history.pushState(null,'',url);
 });
 map.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY>0?1.1:.9)},{passive:false});
+function markerRecord(element){
+  if(element.classList.contains('marker')){const index=Number(element.dataset.index);return{kind:'stop',item:stops[index],element}}
+  if(element.classList.contains('boss-marker')){const item=(activeMap.bosses||[]).find(boss=>boss.id===element.dataset.boss);return item?{kind:'boss',item,element}:null}
+  if(element.classList.contains('floor-transition')){const item=(activeMap.transitions||[]).find(transition=>transition.id===element.dataset.transition);return item?{kind:'transition',item,element}:null}
+  return null;
+}
+function markerPosition(record){return record.kind==='stop'?[record.item[0],record.item[1]]:[record.item.x,record.item.y]}
+function setMarkerPosition(record,point){if(record.kind==='stop'){record.item[0]=point[0];record.item[1]=point[1]}else{record.item.x=point[0];record.item.y=point[1]}record.element.setAttribute('transform',`translate(${formatCoord(point[0])} ${formatCoord(point[1])})`)}
+function finishMarkerMove(){if(!movingMarker)return;const {record,start,last}=movingMarker;movingMarker=null;if(Math.hypot(last[0]-start[0],last[1]-start[1])>=.5){const history=routeUndo.get(routeKey())||[];history.push({type:'position',record,x:start[0],y:start[1]});routeUndo.set(routeKey(),history)}updateRouteDisplay()}
 map.addEventListener('pointerdown',e=>{
   if(routeDesign&&e.button===0){
-    e.preventDefault();
-    const key=routeKey(),strokes=routeEdits.get(key)||[],history=routeUndo.get(key)||[];
-    history.push(strokes.map(stroke=>stroke.map(point=>[...point])));routeUndo.set(key,history);
-    drawingStroke=[svgPoint(e)];strokes.push(drawingStroke);routeEdits.set(key,strokes);
-    map.setPointerCapture(e.pointerId);updateRouteDisplay();return;
+    const target=e.target.closest('.marker, .boss-marker, .floor-transition'),record=target&&markerRecord(target);e.preventDefault();
+    if(record){const start=markerPosition(record);movingMarker={record,start,last:start}}
+    else{const key=routeKey(),strokes=routeEdits.get(key)||[],history=routeUndo.get(key)||[];history.push({type:'route',hadEdits:routeEdits.has(key),prior:strokes.map(stroke=>stroke.map(point=>[...point]))});routeUndo.set(key,history);drawingStroke=[svgPoint(e)];strokes.push(drawingStroke);routeEdits.set(key,strokes)}
+    map.setPointerCapture(e.pointerId);updateRouteDisplay(false);return;
   }
   if(e.target.closest('.marker, .boss-marker, .floor-transition'))return;
   drag={x:e.clientX,y:e.clientY,box:[...box]};map.setPointerCapture(e.pointerId)
 });
 map.addEventListener('pointermove',e=>{
-  if(drawingStroke){const point=svgPoint(e),last=drawingStroke.at(-1);if(Math.hypot(point[0]-last[0],point[1]-last[1])>=1.4){drawingStroke.push(point);updateRouteDisplay()}return}
+  if(movingMarker){const point=svgPoint(e);movingMarker.last=point;setMarkerPosition(movingMarker.record,point);updateRouteDisplay(false);return}
+  if(drawingStroke){const point=svgPoint(e),last=drawingStroke.at(-1);if(Math.hypot(point[0]-last[0],point[1]-last[1])>=1.4){drawingStroke.push(point);updateRouteDisplay(false)}return}
   if(!drag)return;const scale=Math.max(drag.box[2]/map.clientWidth,drag.box[3]/map.clientHeight);box=[drag.box[0]-(e.clientX-drag.x)*scale,drag.box[1]-(e.clientY-drag.y)*scale,...drag.box.slice(2)];render()
 });
 function finishRouteStroke(){if(!drawingStroke)return;const strokes=currentStrokes();strokes[strokes.length-1]=simplifyStroke(drawingStroke);drawingStroke=null;updateRouteDisplay()}
-map.addEventListener('pointerup',()=>{finishRouteStroke();drag=null});map.addEventListener('pointercancel',()=>{finishRouteStroke();drag=null});
+map.addEventListener('pointerup',()=>{finishRouteStroke();finishMarkerMove();drag=null});map.addEventListener('pointercancel',()=>{finishRouteStroke();finishMarkerMove();drag=null});
 document.querySelector('#route-design-toggle').addEventListener('click',()=>setRouteDesign(!routeDesign));
 document.querySelector('#route-undo').addEventListener('click',undoRoute);
 document.querySelector('#route-clear').addEventListener('click',clearRoute);
@@ -190,7 +202,7 @@ function positionBossCard() {
 }
 
 function showBossCard(boss, anchor, pin = false) {
-  if (restoringBossFocus || (bossPinned && !pin)) return;
+  if (routeDesign || restoringBossFocus || (bossPinned && !pin)) return;
   clearTimeout(bossCloseTimer);
   if (bossAnchor) bossAnchor.setAttribute('aria-expanded', 'false');
   bossAnchor = anchor;
@@ -229,7 +241,7 @@ function renderBosses() {
     const marker = node('g', {
       class: 'boss-marker', role: 'button', tabindex: 0,
       'aria-label': `${boss.name}: show abilities and mindset`,
-      'aria-controls': 'boss-card', 'aria-haspopup': 'dialog', 'aria-expanded': 'false',
+      'aria-controls': 'boss-card', 'aria-haspopup': 'dialog', 'aria-expanded': 'false', 'data-boss': boss.id,
       transform: `translate(${boss.x} ${boss.y})`
     }, bossLayer);
     node('circle', {r: boss.mainBoss ? 20 : 16, class: 'boss-hit-area'}, marker);

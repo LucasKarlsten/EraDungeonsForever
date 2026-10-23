@@ -1,8 +1,8 @@
 // Requires Playwright. Defaults to an already-running local Lantern server.
 const {chromium}=require('playwright');const assert=require('node:assert/strict');
-const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const fs=require('node:fs'),path=require('node:path');const loadMaps=require('./map-data.cjs');
 const root=path.join(__dirname,'..','web');
-const maps=vm.runInNewContext(fs.readFileSync(path.join(root,'maps.js'),'utf8')+';dungeons');
+const maps=loadMaps(root);
 (async()=>{const browser=await chromium.launch();try{
  const page=await browser.newPage({viewport:{width:1440,height:1100}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
  const choose=(id,value)=>page.locator(id).selectOption(value,{force:true});

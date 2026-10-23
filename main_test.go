@@ -13,7 +13,7 @@ func TestRoutes(t *testing.T) {
 	}{
 		{"/", "Lead with confidence.", "text/html", 200},
 		{"/app.js", "function loadMap", "javascript", 200},
-		{"/maps.js", "stratholme-main-gate", "javascript", 200},
+		{"/maps/stratholme-main-gate.js", "stratholme-main-gate", "javascript", 200},
 		{"/stratholme-main-gate.png", "\x89PNG\r\n\x1a\n", "image/png", 200},
 		{"/style.css", "color-scheme:dark", "text/css", 200},
 		{"/stratholme-service-entrance.png", "\x89PNG\r\n\x1a\n", "image/png", 200},

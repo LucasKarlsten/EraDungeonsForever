@@ -7,8 +7,8 @@ await p.locator('#next').click();assert.equal(await p.locator('#floor-select').i
 await p.goBack();assert.equal(await p.locator('#floor-select').inputValue(),'balcony');
 await p.uncheck('#notes');assert.equal(await p.locator('.floor-transition').isVisible(),false);await p.check('#notes');
 await p.setViewportSize({width:390,height:844});await p.getByRole('button',{name:'Down to Capital Gardens',exact:true}).tap();assert.equal(await p.locator('#floor-select').inputValue(),'gardens');
-await p.goto('http://lantern.test/?map=stratholme-main-gate');assert.equal(await p.locator('.floor-transition').count(),0);const fs=require('fs'),vm=require('vm');
-const maps=vm.runInNewContext(fs.readFileSync(path.join(__dirname,'..','web/maps.js'),'utf8')+';dungeons');
+await p.goto('http://lantern.test/?map=stratholme-main-gate');assert.equal(await p.locator('.floor-transition').count(),0);
+const maps=require('./map-data.cjs')(path.join(__dirname,'..','web'));
 await p.setViewportSize({width:1440,height:1100});
 for(const map of maps.filter(m=>m.transitions))for(const t of map.transitions){
  await p.goto(`http://lantern.test/?map=${map.id}&floor=${t.floor}`);

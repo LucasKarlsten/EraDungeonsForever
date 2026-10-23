@@ -24,7 +24,7 @@ go build -o /tmp/lantern .
 
 The route overlay and instructions are illustrative, not verified dungeon navigation. The viewer includes Stratholme’s two wings, Scholomance, distinct Dire Maul East, North, and West routes, and separate Lower and Upper Blackrock Spire routes, and a Blackrock Depths Emperor run; this artwork is not evidence that the route matches Classic Era. Review the route in-game before using it as a dungeon guide. Google Fonts are optional; system fonts work offline.
 
-Map definitions, artwork paths, routes, stops, and source credits live in `web/maps.js`; `web/app.js` is the shared viewer. Choose a wing with the atlas selector. The `?map=stratholme-main-gate` URL opens that map directly, and browser Back/Forward restores the selected map. Switching maps resets selection and zoom while preserving route visibility. The viewer supports synchronized stop selection, previous/next navigation, zoom, drag to pan, and a route visibility toggle. A local map image and the interactive route share the SVG coordinate system in `web/index.html` (1000 × 660). Labels printed into the map remain visible when the route is hidden.
+Map definitions, artwork paths, routes, stops, and source credits live one dungeon per file in `web/maps/`; `web/app.js` is the shared viewer. Choose a wing with the atlas selector. The `?map=stratholme-main-gate` URL opens that map directly, and browser Back/Forward restores the selected map. Switching maps resets selection and zoom while preserving route visibility. The viewer supports synchronized stop selection, previous/next navigation, zoom, drag to pan, and a route visibility toggle. A local map image and the interactive route share the SVG coordinate system in `web/index.html` (1000 × 660). Labels printed into the map remain visible when the route is hidden.
 
 ## Map artwork
 
@@ -37,7 +37,7 @@ The image is embedded in the Go binary and served locally; viewing the map requi
 ## Adding a map
 
 1. Place the artwork in `web/`.
-2. Add an entry to `dungeons` in `web/maps.js` with a unique `id`, display metadata, image path, coordinate `width` and `height`, source credit, SVG route path, and stops (`[x, y, title, guidance]`).
+2. Create `web/maps/<id>.js` by copying an existing map file, then update its unique `id`, display metadata, image path, coordinate `width` and `height`, source credit, SVG route path, and stops (`[x, y, title, guidance]`). Register the file in `web/index.html` before `app.js` so it is loaded into the atlas.
 3. Keep the route and stops in that entry’s coordinate space. The selector, heading, breadcrumb, stop count, and attribution are populated automatically.
 4. Verify the route against the intended game version and restart the Go server to embed updated assets.
 
@@ -45,7 +45,7 @@ The image is embedded in the Go binary and served locally; viewing the map requi
 
 Each dungeon includes encounter markers, separate from the numbered route stops. Hover or focus a skull for key abilities and a short mindset note; click/tap to pin it. Escape, the close button, or a click outside dismisses it. Enter/Space opens the card and moves keyboard focus to its close button. The Bosses toggle is independent of Show route.
 
-Boss entries live alongside each map in `web/maps.js` (`id`, `name`, `x`, `y`, `kind`, `mainBoss`, `abilities`, `mindset`), with a map-level `bossSource` link. Notes summarize Classic mechanics from [Icy Veins’ Undead guide](https://www.icy-veins.com/wow-classic/stratholme-undead-dungeon-guide) and [Live guide](https://www.icy-veins.com/wow-classic/stratholme-live-dungeon-guide), checked 2026-10-23. They are brief reminders, not exhaustive ability descriptions. Pins indicate approximate encounter areas on the artwork; route and location verification in Classic remains pending. Rare, profession-summoned, and quest-event encounters are not exhaustively mapped.
+Boss entries live alongside each map in `web/maps/<id>.js` (`id`, `name`, `x`, `y`, `kind`, `mainBoss`, `abilities`, `mindset`), with a map-level `bossSource` link. Notes summarize Classic mechanics from [Icy Veins’ Undead guide](https://www.icy-veins.com/wow-classic/stratholme-undead-dungeon-guide) and [Live guide](https://www.icy-veins.com/wow-classic/stratholme-live-dungeon-guide), checked 2026-10-23. They are brief reminders, not exhaustive ability descriptions. Pins indicate approximate encounter areas on the artwork; route and location verification in Classic remains pending. Rare, profession-summoned, and quest-event encounters are not exhaustively mapped.
 
 Browser regression checks are in `tests/bosses.browser.cjs`. With Playwright and its Chromium browser available, run against a running server:
 

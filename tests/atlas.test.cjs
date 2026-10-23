@@ -2,9 +2,9 @@ const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const vm=require('node:vm');
+const loadMaps=require('./map-data.cjs');
 const root=path.join(__dirname,'..','web');
-const maps=vm.runInNewContext(fs.readFileSync(path.join(root,'maps.js'),'utf8')+';dungeons');
+const maps=loadMaps(root);
 test('nine distinct dungeon routes and valid local artwork',()=>{
  assert.equal(maps.length,9);assert.equal(new Set(maps.map(m=>m.id)).size,maps.length);
  for(const id of ['scholomance','dire-maul-east','dire-maul-north','dire-maul-west','lower-blackrock-spire','upper-blackrock-spire','blackrock-depths'])assert.ok(maps.some(m=>m.id===id));

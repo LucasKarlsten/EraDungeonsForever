@@ -122,6 +122,9 @@ nav b{font-weight:400}
 .route-code-details p{margin:0;color:var(--muted);font-size:10px;line-height:1.5}
 .route-code-details p code{color:var(--text)}
 #map.route-sketching{cursor:crosshair;touch-action:none}
-.route-design-active #markers,.route-design-active #boss-markers,.route-design-active #floor-transitions{pointer-events:none}
-.route-design-active #route-overlay{pointer-events:none}
+.route-design-active #markers,.route-design-active #boss-markers,.route-design-active #floor-transitions{pointer-events:all}
+.route-design-active #route-overlay{pointer-events:all}
 @media(max-width:760px){.route-editor{grid-template-columns:1fr;padding:12px 14px}.route-editor-actions{justify-content:flex-start}.route-editor-actions button{flex:1}.route-code-details{grid-column:1}}
+
+.route-design-active .marker,.route-design-active .boss-marker,.route-design-active .floor-transition{pointer-events:all;cursor:grab}
+.route-design-active .marker:active,.route-design-active .boss-marker:active,.route-design-active .floor-transition:active{cursor:grabbing}

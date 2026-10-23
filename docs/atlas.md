@@ -20,7 +20,7 @@ Two English Blizzard floors, one Emperor route using the Shadowforge Key shortcu
 
 ## Data
 
-Multi-floor entries in `web/maps.js` contain `floors` (`id`, `name`, `image`, `route`). A stop’s fifth element is its floor ID; bosses also have a `floor`. Existing single-floor entries remain supported. Separate SVG `M` subpaths indicate disconnected map sections, not passages across blank artwork. The floor selector jumps to the first route stop on that floor; the full walkthrough stays available in the sidebar.
+Multi-floor entries in `web/maps/<id>.js` contain `floors` (`id`, `name`, `image`, `route`). A stop’s fifth element is its floor ID; bosses also have a `floor`. Existing single-floor entries remain supported. Separate SVG `M` subpaths indicate disconnected map sections, not passages across blank artwork. The floor selector jumps to the first route stop on that floor; the full walkthrough stays available in the sidebar.
 
 ## Checks
 
@@ -75,4 +75,4 @@ Stair artwork is now 20% smaller, with unchanged 40×40 hit targets. Scholomance
 
 ## Freehand route editor
 
-Select **Draw Route**, then drag on a floor map with a mouse or finger. Each stroke replaces that floor’s suggested line on first use; later strokes add separate SVG subpaths. Undo removes the latest stroke (Ctrl/Cmd+Z works too); Clear removes the sketch. Copy code emits a `route: "M… L…"` property for the selected floor in `web/maps.js`. Paste it over that floor’s current `route` value and save to keep the route in the source. The browser preview itself is temporary and does not write files. Points are simplified to keep the exported SVG concise.
+Select **Draw Route**, then drag on a floor map with a mouse or finger. Each stroke replaces that floor’s suggested line on first use; later strokes add separate SVG subpaths. Drag numbered stops, bosses and stair markers to reposition them. Undo reverses the latest stroke or marker move; Clear removes the sketch. **Copy map entry** exports the full selected dungeon object, including edited floor routes and marker coordinates. Replace the entire contents of that dungeon’s `web/maps/<id>.js` file with the copied output and save. The browser preview is temporary and does not write files. Route points are simplified to keep the exported SVG concise.
