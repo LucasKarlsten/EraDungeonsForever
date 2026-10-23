@@ -1,6 +1,6 @@
 <img width="2172" height="724" alt="image" src="https://github.com/user-attachments/assets/3a4be19e-d169-4b16-a63b-a46e02e76a98" />
 
-
+<img width="892" height="591" alt="image" src="https://github.com/user-attachments/assets/b8709700-c83b-49c3-b22f-8086c8727808" />
 
 # Lantern
 
