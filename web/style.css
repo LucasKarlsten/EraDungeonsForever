@@ -128,3 +128,6 @@ nav b{font-weight:400}
 
 .route-design-active .marker,.route-design-active .boss-marker,.route-design-active .floor-transition{pointer-events:all;cursor:grab}
 .route-design-active .marker:active,.route-design-active .boss-marker:active,.route-design-active .floor-transition:active{cursor:grabbing}
+
+.route-arrow-shadow,.route-arrow{fill:none;stroke:#fff2cd;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+.route-arrow{stroke:#a52d21;stroke-width:2.4}

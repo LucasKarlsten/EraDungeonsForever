@@ -4,6 +4,7 @@ const svgNS='http://www.w3.org/2000/svg';
 function node(tag,attrs,parent){const n=document.createElementNS(svgNS,tag);for(const [k,v] of Object.entries(attrs))n.setAttribute(k,v);parent.append(n);return n;}
 const markers=document.querySelector('#markers'),steps=document.querySelector('#steps');
 const map=document.querySelector('#map'),floorPicker=document.querySelector('#floor-select');
+const routeArrows=document.querySelector('#route-arrows');
 let selected=0,stops=[],activeMap,activeFloor,box=[0,0,1000,660],drag=null;
 let routeDesign=false,drawingStroke=null,movingMarker=null;
 const routeEdits=new Map(),routeUndo=new Map();
@@ -16,7 +17,7 @@ function formatCoord(value){return String(Math.round(value*10)/10)}
 function routeFor(floor){const edits=routeEdits.get(`${activeMap.id}::${floor.id}`);return edits===undefined?floor.route:edits.map(points=>points.length?`M${points.map(p=>`${formatCoord(p[0])} ${formatCoord(p[1])}`).join(' L')}`:'').filter(Boolean).join(' ')}
 function exportMapEntry(){const entry=JSON.parse(JSON.stringify(activeMap));if(entry.floors)entry.floors=entry.floors.map(floor=>({...floor,route:routeFor(floor)}));else entry.route=routeFor(floors()[0]);return `window.LANTERN_DUNGEONS = window.LANTERN_DUNGEONS || [];\nwindow.LANTERN_DUNGEONS.push(${JSON.stringify(entry,null,2)});\n`}
 function updateRouteDisplay(refreshCode=true){
-  const route=displayedRoute();document.querySelectorAll('.route,.route-shadow').forEach(path=>path.setAttribute('d',route));
+  const route=displayedRoute();document.querySelectorAll('.route,.route-shadow').forEach(path=>path.setAttribute('d',route));renderRouteArrows(route);
   const code=document.querySelector('#route-code');
   if(code&&refreshCode&&!drawingStroke&&!movingMarker)code.textContent=exportMapEntry();document.querySelector('#route-export-file').textContent=`web/maps/${activeMap.id}.js`;
   const undo=routeUndo.get(routeKey())||[];
@@ -25,6 +26,35 @@ function updateRouteDisplay(refreshCode=true){
   const count=currentStrokes()?.length||0;
   document.querySelector('#route-editor-status').textContent=drawingStroke?'Drawing… release to finish this stroke.':count?`${count} stroke${count===1?'':'s'} on ${activeFloor.name}. Drag a numbered stop, boss, or stair marker to move it; undo, clear, or copy the map entry to save.`:`Drag the map to sketch; drag a stop, boss, or stair marker to move it. Copy the map entry to save your edits.`;
 }
+
+function renderRouteArrows(route){
+  routeArrows.replaceChildren();
+  const commands=[...route.matchAll(/([ML])\s*(-?\d+(?:\.\d+)?)\s+(-?\d+(?:\.\d+)?)/g)];
+  const paths=[];let points=[];
+  for(const command of commands){const point=[Number(command[2]),Number(command[3])];if(command[1]==='M'){if(points.length>1)paths.push(points);points=[point]}else points.push(point)}
+  if(points.length>1)paths.push(points);
+  const avoid=stops.filter(stop=>stopFloor(stop)===activeFloor.id).map(stop=>stop)
+    .concat((activeMap.bosses||[]).filter(boss=>(boss.floor||floors()[0].id)===activeFloor.id).map(boss=>[boss.x,boss.y]))
+    .concat((activeMap.transitions||[]).filter(item=>item.floor===activeFloor.id).map(item=>[item.x,item.y]));
+  for(const path of paths){
+    let untilNext=88;
+    for(let i=1;i<path.length;i++){
+      const a=path[i-1],b=path[i],dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);if(length<1)continue;
+      let travelled=0;
+      while(travelled+length>=untilNext){travelled+=untilNext;const t=travelled/length,x=a[0]+dx*t,y=a[1]+dy*t;
+        if(!avoid.some(([px,py])=>Math.hypot(px-x,py-y)<34)){
+          const arrow=node('path',{d:'M-5 -4 L0 0 L-5 4',class:'route-arrow-shadow'},routeArrows);
+          arrow.setAttribute('transform',`translate(${formatCoord(x)} ${formatCoord(y)}) rotate(${formatCoord(Math.atan2(dy,dx)*180/Math.PI)})`);
+          const colored=node('path',{d:'M-5 -4 L0 0 L-5 4',class:'route-arrow'},routeArrows);
+          colored.setAttribute('transform',arrow.getAttribute('transform'));
+        }
+        untilNext=88;
+      }
+      untilNext-=length-travelled;
+    }
+  }
+}
+
 function setRouteDesign(enabled){
   routeDesign=enabled;drawingStroke=null;map.classList.toggle('route-sketching',enabled);document.body.classList.toggle('route-design-active',enabled);
   const button=document.querySelector('#route-design-toggle');button.setAttribute('aria-pressed',String(enabled));button.textContent=enabled?'FINISH DRAWING':'DRAW ROUTE';
